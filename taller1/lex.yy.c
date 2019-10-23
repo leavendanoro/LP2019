@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 31
-#define YY_END_OF_BUFFER 32
+#define YY_NUM_RULES 32
+#define YY_END_OF_BUFFER 33
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,14 +362,14 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[74] =
     {   0,
-        0,    0,   32,   31,    1,   31,    2,    3,   19,   17,
-        6,   18,   20,    8,   28,    7,   13,   11,   12,   31,
-       31,   31,    4,    5,   29,   10,    9,    9,   30,   30,
-       30,   30,    1,   22,   21,   24,    0,    8,    0,   28,
-       14,   16,   15,    0,    0,    0,   10,    9,    9,   23,
-       30,    8,    0,    8,   25,    0,   27,   10,    9,    9,
-        0,   10,    9,    9,    0,   10,    9,    9,   26,   10,
-        9,    9,    0
+        0,    0,   33,   32,    1,   32,    2,    3,   21,   19,
+        6,   20,   22,    9,    8,    7,   15,   13,   14,   32,
+       32,   32,    4,    5,   10,   10,   10,   11,   31,   31,
+       31,   31,    1,   24,   23,   26,    0,    9,    0,   30,
+       16,   18,   17,    0,    0,    0,   12,   11,   11,   25,
+       31,    9,    0,    9,   27,    0,   29,   12,   11,   11,
+        0,   12,   11,   11,    0,   12,   11,   11,   28,   12,
+       11,   11,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -490,14 +490,30 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "a.l"
-#line 2 "a.l"
+#line 1 "lexer.l"
+#line 2 "lexer.l"
+#include <stdio.h>
+typedef struct data data;
+struct data {
+    int type;
+    char *lex;
+    int meaning[2];
+};
+data d = {.type = -1, .lex = "-NL", .meaning = {-1}};
+/*
+Definicion arreglos auxiliares para añadir más de un significado
+ a los predicados sin numero pues pueden ser variables
+*/
+char * alge [] = {"x","y","z"};
+char * ari [] = {"p","q","r","t"};
+
 #define LPAR 10
 #define RPAR 11
 #define LBRA 12
 #define RBRA 13
 #define COMMA 14
-#define COLON 15
+#define SEMICOLON 15
+#define COLON 16
 #define NUMERO 400
 #define IDALG 401
 #define IDARI 402
@@ -524,8 +540,8 @@ char *yytext;
 #define ASIGN 800
 #define VAR 900
 #define FUNC 1000
-#line 528 "lex.yy.c"
-#line 529 "lex.yy.c"
+#line 544 "lex.yy.c"
+#line 545 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -745,9 +761,9 @@ YY_DECL
 		}
 
 	{
-#line 41 "a.l"
+#line 57 "lexer.l"
 
-#line 751 "lex.yy.c"
+#line 767 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -808,160 +824,207 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 42 "a.l"
+#line 58 "lexer.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 43 "a.l"
+#line 59 "lexer.l"
 {return LPAR;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 44 "a.l"
+#line 60 "lexer.l"
 {return RPAR;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "a.l"
+#line 61 "lexer.l"
 {return LBRA;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "a.l"
+#line 62 "lexer.l"
 {return RBRA;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 47 "a.l"
+#line 63 "lexer.l"
 {return COMMA;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 48 "a.l"
-{return COLON;}
+#line 64 "lexer.l"
+{return SEMICOLON;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 49 "a.l"
-{return NUMERO;}
+#line 65 "lexer.l"
+{return COLON;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 50 "a.l"
-{return IDALG;}
+#line 66 "lexer.l"
+{d.lex = yytext;
+          return NUMERO;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 51 "a.l"
-{return IDARI;}
+#line 68 "lexer.l"
+{
+    int i = 0;
+    while(alge[i]) {
+        if(strcmp(alge[i], yytext) == 0) {
+            d.meaning[0] = VAR;
+            d.meaning[1] = IDALG;
+            break;
+        }
+        i++;
+    }
+    i = 0;
+    while(ari[i]) {
+        if(strcmp(ari[i], yytext) == 0) {
+            d.meaning[0] = VAR;
+            d.meaning[1] = IDARI;
+            break;
+        }
+        i++;
+    }
+    d.lex = yytext;
+    return VAR;
+}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 52 "a.l"
-{return RELOP;}
+#line 90 "lexer.l"
+{d.lex = yytext;
+         return IDALG;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 53 "a.l"
-{return RELOP;}
+#line 92 "lexer.l"
+{d.lex = yytext;
+         return IDARI;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 54 "a.l"
-{return RELOP;}
+#line 94 "lexer.l"
+{d.type = EQ;
+     return RELOP;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 55 "a.l"
-{return RELOP;}
+#line 96 "lexer.l"
+{d.type = GT;
+     return RELOP;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 56 "a.l"
-{return RELOP;}
+#line 98 "lexer.l"
+{d.type = LT;
+     return RELOP;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 57 "a.l"
-{return RELOP;}
+#line 100 "lexer.l"
+{d.type = LE;
+      return RELOP;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 58 "a.l"
-{return ARIOP;}
+#line 102 "lexer.l"
+{d.type = GE;
+      return RELOP;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 59 "a.l"
-{return ARIOP;}
+#line 104 "lexer.l"
+{d.type = NE;
+      return RELOP;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 60 "a.l"
-{return ARIOP;} /* operador THEN */
+#line 106 "lexer.l"
+{d.type = ADD;
+     return ARIOP;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 61 "a.l"
-{return ARIOP;} /* division */
+#line 108 "lexer.l"
+{d.type = SUS;
+     return ARIOP;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 62 "a.l"
-{return LOGOP;} /* operador THEN */
+#line 110 "lexer.l"
+{d.type = MUL;
+     return ARIOP;} 
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 63 "a.l"
-{return LOGOP;} /* operador AND */
+#line 112 "lexer.l"
+{d.type = DIV;
+     return ARIOP;} 
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 64 "a.l"
-{return LOGOP;} /* operador OR */
+#line 114 "lexer.l"
+{d.type = THEN;
+      return LOGOP;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 65 "a.l"
-{return LOGOP;} /* operador XOR */
+#line 116 "lexer.l"
+{d.type = AND;
+      return LOGOP;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 66 "a.l"
-{return LOGOP;} /* operador EXT */
+#line 118 "lexer.l"
+{d.type = OR;
+      return LOGOP;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 67 "a.l"
-{return LOGOP;} /* operador FORALL */
+#line 120 "lexer.l"
+{d.type = XOR;
+      return LOGOP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 68 "a.l"
-{return LOGOP;} /* operador IFF */
+#line 122 "lexer.l"
+{d.type = EXIST;
+     return LOGOP;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 69 "a.l"
-{return ASIGN;}
+#line 124 "lexer.l"
+{d.type = FORALL;
+        return LOGOP;} /* operador FORALL */
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 70 "a.l"
-{return VAR;}
+#line 126 "lexer.l"
+{d.type = IFF;
+     return LOGOP;} /* operador IFF */
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 71 "a.l"
-{return FUNC;}
+#line 128 "lexer.l"
+{return ASIGN;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 72 "a.l"
+#line 129 "lexer.l"
+{d.lex = yytext;
+           return FUNC;}
+	YY_BREAK
+case 32:
+YY_RULE_SETUP
+#line 131 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 965 "lex.yy.c"
+#line 1028 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1969,7 +2032,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 72 "a.l"
+#line 131 "lexer.l"
 
 
 #include <stdio.h>
@@ -1979,6 +2042,25 @@ int main(argc,argv)
 int argc;
 char *argv[];
 {
-int val;
-while(val = yylex()) printf("value is %d\n",val);
+    int val;
+    while(val = yylex()){
+        if(d.type != -1){
+            printf("< %d , %d , - , - >\n",val,d.type);
+            d.type = -1;
+        }else{
+            if(d.lex != "-NL"){
+                if(d.meaning[0] != -1){
+                    printf("< %d , - , %s , < %d , %d > >\n",val,d.lex,d.meaning[0],d.meaning[1]);
+                    d.meaning[0] = d.meaning[1] = -1;
+                    d.lex = "-NL";
+                }else{
+                    printf("< %d , - , %s , - >\n",val,d.lex);
+                    d.lex = "-NL";
+                }
+            }else{
+                printf("< %d , - , - , - >\n",val);                
+            }
+        }
+        
+    }
 }
