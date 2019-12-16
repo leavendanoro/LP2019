@@ -2,19 +2,22 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <ctype.h>
-    int yylex(); 
+    extern int yylex(); 
     void yyerror(char *s);
-    char vars[52];
+    int variables [52];
+    int computeSymbolIndex(char c);
+    int symbolVal(char symbol);
+    void updateSymbolVal(char symbol, int val);
 %}
 
-%token FUNC                      /*Función*/
-%token VAR                       /* Variable de función*/
-%token IDALG                     /*Predicado algebraico*/
-%token IDARIT                    /*Predicado aritmético*/
-%token NUM                       /*Número*/
-%token EOL                       /*Fin de linea ";" */
-%token ASIGALG                   /*Definición algebraica ":=" */    
-%token ASIGARIT                  /*Definición aritmética ":" */
+%start LINE
+%union {double val; char id;}
+
+%token <id> IDALG                    /*Predicado algebraico*/
+%token <id> IDARIT                   /*Predicado aritmético*/
+%token <val> NUM                 /*Número*/ 
+%token EOL                           /*Fin de linea ";" */
+%token DEF                     /*Definición algebraica ":=" */    
 
 %token OPAR                      /*Paréntesis abierto "(" */
 %token CLPAR                     /*Paréntesis cerrado ")" */
@@ -35,69 +38,94 @@
 %token XNOR                      /*Equivalencia lógica*/
 %token XOR                       /*O exclusivo*/
 
+
 %token OPARIT                    /*Operadores aritmeticos*/
 %token PLUS                      /*Suma*/
 %token MINUS                     /*Resta*/
 %token TIMES                     /*Producto*/
 %token OVER                      /*División*/
-%start EXPR
+%token PRINT 
+%token EXIT_COMMAND
+
+%type <val> LINE 
+%type <val> EXPR 
+%type <val> PREDARIT
+%type <id> ASSIG
+%type <id> ID 
 
 %%
 
-EXPR    : FUNC OPAR PARAM CLPAR EOL 
-        | ID ASIGN PRED EOL
-        ;
+LINE    : ASSIG EOL                     {;}
+        | EXIT_COMMAND EOL              {exit(EXIT_SUCCESS);}
+        | PRINT ID {}                   {printf("Printing %d/n", $2);}
+        | LINE ASSIG EOL                {;}
+        | LINE PRINT EXPR EOL           {printf("Printing %d/n", $3);}
+        | LINE EXIT_COMMAND EOL         {exit(EXIT_SUCCESS);}
+ASSIG   : ID DEF EXPR                   {updateSymbolVal($1,$3);}
+    
 
-PARAM   : PARAM ASIGARIT PARAM
-        | IDALG
-        | IDARIT
-        | VAR
-        | EMPTY
+EXPR    :   OPAR EXPR CLPAR             
+        |   PREDARIT GT PREDARIT        {if ($1 > $3) {$$ = 1; } else {$$ = 0;}}            
+        |   PREDARIT LT PREDARIT        {if ($1 < $3) {$$ = 1;} else {$$= 0;}}    
+        |   PREDARIT GOE PREDARIT       {if ($1 >= $3) {$$ = 1;} else {$$= 0;}}      
+        |   PREDARIT LOE PREDARIT       {if ($1 <= $3) {$$ = 1;} else {$$= 0;}}
+        |   PREDARIT EQ PREDARIT        {if ($1 == $3) {$$ = 1;} else {$$= 0;}}       
+        |   PREDARIT DF PREDARIT        {if ($1 != $3) {$$ = 1;} else {$$= 0;}} 
         ;
 
 ID      : IDALG
         | IDARIT 
         ;
 
-ASIGN   : ASIGALG
-        | ASIGARIT
-        ;
+PREDARIT    : NUM
+            | PREDARIT PLUS NUM  {$$ = $1 + $3;}  
+            | PREDARIT MINUS NUM {$$ = $1 - $3;}
+            | PREDARIT TIMES NUM {$$ = $1 * $3;}
+            | PREDARIT OVER NUM  {$$ = $1 / $3;}
+            | OPAR PREDARIT CLPAR 
+            ;
 
-COLONPRED: PRED EOL{;};
-
-PRED    : PRED PLUS PRED {$$ = $1 + $3;}
-        | PRED MINUS PRED {$$ = $1 + $3;}
-        | PRED TIMES PRED {$$ = $1 + $3;}
-        | PRED OVER PRED  {$$ = $1 + $3;}
-
-        | PRED GT PRED {if ($1 > $3) {$$ = 1;} else {$$= 0;}}
-        | PRED LT PRED {if ($1 < $3) {$$ = 1;} else {$$= 0;}}
-        | PRED GOE PRED {if ($1 >= $3) {$$ = 1;} else {$$= 0;}}
-        | PRED LOE PRED {if ($1 <= $3) {$$ = 1;} else {$$= 0;}}
-        
-        | PRED DF PRED {if ($1 != $3) {$$ = 1;} else {$$= 0;}} 
-        | PRED EQ PRED {if ($1 == $3) {$$ = 1;} else {$$= 0;}} 
-        | PRED IMPLY PRED {if ($1 >= $3) {$$ = 1;} else {$$= 0;}} 
-        | PRED AND PRED {if ($1 == 1 && $3 == 0) {$$ = 0;} else {$$ = 1;}}
-        | PRED OR PRED  {if ($1 || $3 == 1) {$$ = 1;} else{$$ = 0;}}
-        | PRED XNOR PRED {if ($1 == $3) {$$ = 1;} else {$$= 0;}} 
-        | VAR
-        | NUM
-        | IDALG
-        | IDARIT
-        ; 
 EMPTY   : ;
 
 
 
 %%
+
+int computeSymbolIndex(char token)
+{
+	int idx = -1;
+	if(islower(token)) {
+		idx = token - 'a' + 26;
+	} else if(isupper(token)) {
+		idx = token - 'A';
+	}
+	return idx;
+} 
+int symbolVal(char symbol)
+{
+	int bucket = computeSymbolIndex(symbol);
+	return variables[bucket];
+}
+
+void updateSymbolVal(char symbol, int val)
+{
+	int bucket = computeSymbolIndex(symbol);
+	variables[bucket] = val;
+}
+
 int main(void){
     int i;
-    for(i = 0; i < 52; i++){
-        vars[i] = 0;
+    int j;
+    for(i = 0; i < 100; i++){
+        variables[i] = -1;
     }
-    return yyparse(); 
+
+    while(yylex()){
+     yyparse();
+    }
+    return 0;
 }
+
 void yyerror(char* s){
     fprintf(stderr, "%s\n", s);
 }

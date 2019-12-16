@@ -1,32 +1,30 @@
 %{
     #include "parser.tab.h"
-    void yyerror(char *s);
-    int yylex();
 %}
 
-
+%option noyywrap
 delim               [ \t\n]        
 ws                  {delim}+
-letraInicialArit    [pqrtPQRT]    
-letraInicialAlg     [xyzXYZ]    
 digito              [0-9]         
 numero              ({digito}+|{digito}*\.{digito}+([eE][-+]?{digito}+)?)
-predicadoAritID     {letraInicialArit}({digito}{1,5})?  
-predicadoAlgID      {letraInicialAlg}({digito}{1,5})?   
-funcion             ^[A-Z][a-z]*]        
+predicadoAritID     [a-z]  
+predicadoAlgID      [A-Z]
+funcion             ^[A-Z][a-z]*]
+        
 
 
 
 
 %%
 {ws}                {/*No hacer nada*/}
-{funcion}           {yylval = yytext; return FUNC;}  
-{predicadoAritID}   {yylval = yytext; return IDARIT;}
-{predicadoAlgID}    {yylval = yytext; return IDALG;}
-{numero}            {yylval = strtod(yytext, NULL); return NUM;}
+{predicadoAritID}   {yylval.id = yytext; return IDARIT;}
+{predicadoAlgID}    {yylval.id = yytext; return IDALG;}
+{numero}            {yylval.val = strtod(yytext, NULL); return NUM;}
+"print"             {return PRINT;}
+"exit"              {return EXIT_COMMAND;}
 ";"                 {return EOL;}
-":="                {return ASIGALG;}
-":"                 {return ASIGARIT;}
+":="                {return DEF;}
+":"                 {return DEF;}
 "("                 {return OPAR;}
 ")"                 {return CLPAR;}
 "["                 {return OPSQ;}
@@ -52,7 +50,5 @@ funcion             ^[A-Z][a-z]*]
 
 
 %%
-int yywrap (void){
-    return 1;
-}
+
 
