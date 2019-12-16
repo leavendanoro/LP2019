@@ -17,7 +17,7 @@ void updateSymbolVal(char symbol, int val);
 %token <id> identifier
 %type <num> line exp term 
 %type <id> assignment
-%left '<' '>' '=' "!=" "<=" ">="
+%left '<' '>' EQ GOE LOE DF
 %left '+' '-'
 %left '*' '/'
 %%
@@ -40,11 +40,11 @@ exp    	: term                  {$$ = $1;}
        	| exp '*' exp          {$$ = $1 * $3;}
        	| exp '/' exp          {$$ = $1 / $3;}
 		| exp '>' exp         {if ($1 > $3) {$$ = 1; } else {$$ = 0;}}
-		| exp ">=" exp      {if ($1 >= $3) {$$ = 1; } else {$$ = 0;}}
+		| exp GOE exp      {if ($1 >= $3) {$$ = 1; } else {$$ = 0;}}
 		| exp '<' exp          {if ($1 < $3) {$$ = 1; } else {$$ = 0;}}
-		| exp "<=" exp      {if ($1 <= $3) {$$ = 1; } else {$$ = 0;}}
-		| exp "==" exp    	{if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
-		| exp "!=" exp      {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
+		| exp LOE exp      {if ($1 <= $3) {$$ = 1; } else {$$ = 0;}}
+		| exp EQ exp    	{if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
+		| exp DF exp      {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
        	;
 term   	: number                {$$ = $1;}
 		| identifier			{$$ = symbolVal($1);} 
@@ -88,4 +88,3 @@ int main (void) {
 }
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
-

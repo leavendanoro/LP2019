@@ -48,7 +48,11 @@ extern int yydebug;
     print = 258,
     exit_command = 259,
     number = 260,
-    identifier = 261
+    identifier = 261,
+    EQ = 262,
+    GOE = 263,
+    LOE = 264,
+    DF = 265
   };
 #endif
 
@@ -60,7 +64,7 @@ union YYSTYPE
 #line 12 "parser.y" /* yacc.c:1909  */
 int num; char id;
 
-#line 64 "parser.tab.h" /* yacc.c:1909  */
+#line 68 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
