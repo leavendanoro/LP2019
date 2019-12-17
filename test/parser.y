@@ -17,9 +17,15 @@ void updateSymbolVal(char symbol, int val);
 %token <id> identifier
 %type <num> line exp term 
 %type <id> assignment
+%left XNOR
+%left IMPLY
+%left OR
+%left AND
+%left XOR
 %left '<' '>' EQ GOE LOE DF
 %left '+' '-'
 %left '*' '/'
+%right NOT
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
@@ -45,6 +51,12 @@ exp    	: term                  {$$ = $1;}
 		| exp LOE exp      {if ($1 <= $3) {$$ = 1; } else {$$ = 0;}}
 		| exp EQ exp    	{if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
 		| exp DF exp      {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
+		| exp XNOR exp           {if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
+		| exp IMPLY exp           {if ($1 == 1 && $3 == 0) {$$ = 0; } else {$$ = 1;}}
+		| exp XOR exp           {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
+		| exp AND exp           {if ($1 == 1 && $3 == 1) {$$ = 1; } else {$$ = 0;}}
+		| exp OR exp           {if ($1 == 1 || $3 == 1) {$$ = 1; } else {$$ = 0;}}
+		| NOT exp           {$$ = !$2;}
        	;
 term   	: number                {$$ = $1;}
 		| identifier			{$$ = symbolVal($1);} 
