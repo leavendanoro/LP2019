@@ -38,9 +38,13 @@ void updateSymbolVal(char symbol, int val);
 
 line    : assignment ';'		{;}
 		| exit_command ';'		{exit(EXIT_SUCCESS);}
-		| print exp ';'			{printf("Printing %d\n", $2);}
+		| print exp ';'			{if($2==1){printf("True\n");}
+								 else if($2==0){printf("False\n");}
+								 else if($2==-1){printf("Undeclared\n");};}
 		| line assignment ';'	{;}
-		| line print exp ';'	{printf("Printing %d\n", $3);}
+		| line print exp ';'	{if($3==1){printf("True\n");}
+								 else if($3==0){printf("False\n");}
+								 else if($3==-1){printf("Undeclared\n");};}
 		| line exit_command ';'	{exit(EXIT_SUCCESS);}
         ;
 
@@ -106,7 +110,7 @@ int main (void) {
 	/* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
-		symbols[i] = 0;
+		symbols[i] = -1;
 	}
 
 	return yyparse ( );
