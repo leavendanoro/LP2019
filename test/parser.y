@@ -13,29 +13,29 @@ void updateSymbolVal(char symbol, int val);
 %union {int num; char id;}   //Unión para asociar los valores con las ids de las tablas de símbolos      
 %start line   			     // No terminal inicial
 // Definición de los tokens
-%token print			     
-%token exit_command
-%token T
-%token F
-%token OPAR
-%token CLPAR
-%token OPSQ
-%token CLSQ
-%token <num> number
-%token <id> identifier
+%token print			//"print"     
+%token exit_command     //"exit"
+%token T				//"True"
+%token F				//"False"
+%token OPAR				// '('
+%token CLPAR			// ')'
+%token OPSQ				// '['
+%token CLSQ				// ']'
+%token <num> number     //Números
+%token <id> identifier	// identificadores de variables
 // Tipos de datos esperados por los no terminales desde el lexer
 %type <num> line exp term ari
 %type <id> assignment
 // Definida la precedencia de los operadores (Si el número de linea es menor, su precedencia será menor)
-%left XNOR
-%left IMPLY
-%left OR
-%left AND
-%left XOR
-%left '<' '>' EQ GOE LOE DF
-%left '+' '-'
-%left '*' '/'
-%right NOT
+%left XNOR 				// Equivalencia 
+%left IMPLY 			// Implicación 
+%left OR				// Disyunción
+%left AND				// Conjunción
+%left XOR	            // Disyunción exclusiva
+%left '<' '>' EQ GOE LOE DF // Menor que, mayor que, igual a, mayor o igual, menor o igual, distindo de 
+%left '+' '-'			// Suma y resta
+%left '*' '/'			// Multiplicación y división
+%right NOT				// Negación
 %%
 
 //Definición de la gramática 
