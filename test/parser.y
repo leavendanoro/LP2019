@@ -13,9 +13,11 @@ void updateSymbolVal(char symbol, int val);
 %start line
 %token print
 %token exit_command
+%token T
+%token F
 %token <num> number
 %token <id> identifier
-%type <num> line exp term 
+%type <num> line exp term ari
 %type <id> assignment
 %left XNOR
 %left IMPLY
@@ -41,24 +43,27 @@ line    : assignment ';'		{;}
 assignment : identifier '=' exp  { updateSymbolVal($1,$3); }
 			;
 exp    	: term                  {$$ = $1;}
-       	| exp '+' exp          {$$ = $1 + $3;}
-       	| exp '-' exp         {$$ = $1 - $3;}
-       	| exp '*' exp          {$$ = $1 * $3;}
-       	| exp '/' exp          {$$ = $1 / $3;}
-		| exp '>' exp         {if ($1 > $3) {$$ = 1; } else {$$ = 0;}}
-		| exp GOE exp      {if ($1 >= $3) {$$ = 1; } else {$$ = 0;}}
-		| exp '<' exp          {if ($1 < $3) {$$ = 1; } else {$$ = 0;}}
-		| exp LOE exp      {if ($1 <= $3) {$$ = 1; } else {$$ = 0;}}
-		| exp EQ exp    	{if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
-		| exp DF exp      {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
-		| exp XNOR exp           {if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
-		| exp IMPLY exp           {if ($1 == 1 && $3 == 0) {$$ = 0; } else {$$ = 1;}}
+		| ari '>' ari         	{if ($1 > $3) {$$ = 1; } else {$$ = 0;}}
+		| ari GOE ari   		{if ($1 >= $3) {$$ = 1; } else {$$ = 0;}}
+		| ari '<' ari           {if ($1 < $3) {$$ = 1; } else {$$ = 0;}}
+		| ari LOE ari     		{if ($1 <= $3) {$$ = 1; } else {$$ = 0;}}
+		| ari EQ ari    		{if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
+		| ari DF ari      		{if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
+		| exp XNOR exp          {if ($1 == $3) {$$ = 1; } else {$$ = 0;}}
+		| exp IMPLY exp         {if ($1 == 1 && $3 == 0) {$$ = 0; } else {$$ = 1;}}
 		| exp XOR exp           {if ($1 != $3) {$$ = 1; } else {$$ = 0;}}
 		| exp AND exp           {if ($1 == 1 && $3 == 1) {$$ = 1; } else {$$ = 0;}}
-		| exp OR exp           {if ($1 == 1 || $3 == 1) {$$ = 1; } else {$$ = 0;}}
-		| NOT exp           {$$ = !$2;}
+		| exp OR exp           	{if ($1 == 1 || $3 == 1) {$$ = 1; } else {$$ = 0;}}
+		| NOT exp           	{$$ = !$2;}
        	;
-term   	: number                {$$ = $1;}
+
+ari		: number				{$$ = $1;}
+		| ari '+' ari          	{$$ = $1 + $3;}
+       	| ari '-' ari         	{$$ = $1 - $3;}
+       	| ari '*' ari          	{$$ = $1 * $3;}
+       	| ari '/' ari         	{$$ = $1 / $3;}
+term   	: T               	{$$ = 1;}
+		| F					{$$ = 0;}
 		| identifier			{$$ = symbolVal($1);} 
         ;
 

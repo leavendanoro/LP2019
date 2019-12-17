@@ -20,6 +20,8 @@ int yylex();
 "<=>"               {return XNOR;}
 "=>"                {return IMPLY;}
 "~||"               {return XOR;}
+"True"              {return T;}
+"False"             {return F;}
 .                      {ECHO; yyerror ("unexpected character");}
 
 %%
