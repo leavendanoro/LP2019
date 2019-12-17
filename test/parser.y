@@ -15,6 +15,10 @@ void updateSymbolVal(char symbol, int val);
 %token exit_command
 %token T
 %token F
+%token OPAR
+%token CLPAR
+%token OPSQ
+%token CLSQ
 %token <num> number
 %token <id> identifier
 %type <num> line exp term ari
@@ -40,9 +44,11 @@ line    : assignment ';'		{;}
 		| line exit_command ';'	{exit(EXIT_SUCCESS);}
         ;
 
-assignment : identifier '=' exp  { updateSymbolVal($1,$3); }
+assignment : identifier ':' exp  { updateSymbolVal($1,$3); }
 			;
 exp    	: term                  {$$ = $1;}
+		| OPAR exp CLPAR		{$$ = $2;}
+		| OPSQ exp CLSQ			{$$ = $2;}
 		| ari '>' ari         	{if ($1 > $3) {$$ = 1; } else {$$ = 0;}}
 		| ari GOE ari   		{if ($1 >= $3) {$$ = 1; } else {$$ = 0;}}
 		| ari '<' ari           {if ($1 < $3) {$$ = 1; } else {$$ = 0;}}
@@ -62,6 +68,8 @@ ari		: number				{$$ = $1;}
        	| ari '-' ari         	{$$ = $1 - $3;}
        	| ari '*' ari          	{$$ = $1 * $3;}
        	| ari '/' ari         	{$$ = $1 / $3;}
+		| OPAR ari CLPAR		{$$ = $2;}
+		| OPSQ ari CLSQ			{$$ = $2;}
 term   	: T               	{$$ = 1;}
 		| F					{$$ = 0;}
 		| identifier			{$$ = symbolVal($1);} 

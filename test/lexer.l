@@ -9,7 +9,7 @@ int yylex();
 [a-zA-Z]			   {yylval.id = yytext[0]; return identifier;}
 [0-9]+                 {yylval.num = atoi(yytext); return number;}
 [ \t\n]                ;
-[-+=*/;><]              {return yytext[0];}
+[-+=*/;><:]              {return yytext[0];}
 "=="                {return EQ;}
 ">="                {return GOE;}
 "<="                {return LOE;}
@@ -22,6 +22,10 @@ int yylex();
 "~||"               {return XOR;}
 "True"              {return T;}
 "False"             {return F;}
+"("                 {return OPAR;}
+")"                 {return CLPAR;}
+"["                 {return OPSQ;}
+"]"                 {return CLSQ;}
 .                      {ECHO; yyerror ("unexpected character");}
 
 %%

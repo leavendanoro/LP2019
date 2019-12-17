@@ -49,18 +49,22 @@ extern int yydebug;
     exit_command = 259,
     T = 260,
     F = 261,
-    number = 262,
-    identifier = 263,
-    XNOR = 264,
-    IMPLY = 265,
-    OR = 266,
-    AND = 267,
-    XOR = 268,
-    EQ = 269,
-    GOE = 270,
-    LOE = 271,
-    DF = 272,
-    NOT = 273
+    OPAR = 262,
+    CLPAR = 263,
+    OPSQ = 264,
+    CLSQ = 265,
+    number = 266,
+    identifier = 267,
+    XNOR = 268,
+    IMPLY = 269,
+    OR = 270,
+    AND = 271,
+    XOR = 272,
+    EQ = 273,
+    GOE = 274,
+    LOE = 275,
+    DF = 276,
+    NOT = 277
   };
 #endif
 
@@ -72,7 +76,7 @@ union YYSTYPE
 #line 12 "parser.y" /* yacc.c:1909  */
 int num; char id;
 
-#line 76 "parser.tab.h" /* yacc.c:1909  */
+#line 80 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
